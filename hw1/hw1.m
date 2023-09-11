@@ -188,7 +188,7 @@ for i=-15:15
 end
 
 %%
-% 17. Take the previous image with the white square in it. Place a 121x121 gray  
+% 17. Take the previous image with the white square in it. Place a 121x121 gray 
 %     square (e.g. pixel values 150) at the center of this image. This time you 
 %     are NOT allowed to use loops. Hint: You can access a range of rows and 
 %     columns in a matrix; see examples in the tutorial.
