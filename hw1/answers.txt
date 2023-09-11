@@ -1,0 +1,5 @@
+2. The loop-based computation took 0.0210s.
+3. The vectorized computation took 0.0024s.
+12. The image size is 750 x 1500, with 3 channels.
+14. There are 12 pixels with a gray value of 6.
+15. The darkest pixel is located at [604, 1290].
