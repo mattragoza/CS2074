@@ -1,90 +1,31 @@
 
-image_file = 'images/spiral.jpg';
-im = imread(image_file);
+image_dir = 'images/';
+image_names = {'spiral.jpg', 'chess.jpg', 'cathedral.jpg'};
+num_images = length(image_names);
 
-% corner detection parameters
-k = 0.05;
-hsize = 2;              % half window size
-fsize = 2 * hsize + 1;  % full window size
+output_dir = 'plots/';
+mkdir(output_dir);
 
-% convert image to grayscale double
-im_gray = double(rgb2gray(im));
-[height, width] = size(im_gray);
+for i=1:num_images
 
-% Sobel derivative filters
-Dh = [1 0 -1;2 0 -2;1 0 -1];
-Dv = [1 2 1;0 0 0;-1 -2 -1];
+    % load image, reduce size, and detect keypoints
+    image_file = fullfile(image_dir, image_names{i});
+    image = imread(image_file);
+    image = imresize(image, 0.5);
+    [x, y, scores, Ih, Iv] = extract_keypoints(image);
+    
+    % diplay image, gradient, and keypoints
+    
+    figure('Position', [100, 100, 1200, 800]);
+    ax1 = subplot(2, 2, 1); imagesc(image); title('Input image and detected keypoints');
+    hold on; scatter(x, y, [], 'yellow');
+    ax2 = subplot(2, 2, 2); imagesc(scores); title('Harris corner detector response');
+    %hold on; scatter(x, y, [], 'white', 'MarkerEdgeAlpha', 0.1);
+    ax3 = subplot(2, 2, 3); imagesc(Ih); title('Horizontal image gradient');
+    ax4 = subplot(2, 2, 4); imagesc(Iv); title('Vertical image gradient');
+    colormap gray; linkaxes([ax1, ax2, ax3, ax4]);
 
-% apply derivative filters to image
-Ih = imfilter(im_gray, Dh);
-Iv = imfilter(im_gray, Dv);
-
-% compute corner detection scores
-R = zeros(height, width);
-for i=(hsize + 1):(height - hsize - 1)
-    for j=(hsize + 1):(width - hsize - 1)
-
-        % compute structure tensor
-        M = zeros(2, 2);
-        for u=-hsize:hsize
-            for v=-hsize:hsize
-                M(1,1) = M(1,1) + Ih(i+u,j+v)^2;
-                M(1,2) = M(1,2) + Ih(i+u,j+v)*Iv(i+u,j+v);
-                M(2,1) = M(2,1) + Ih(i+u,j+v)*Iv(i+u,j+v);
-                M(2,2) = M(2,2) + Iv(i+u,j+v)^2;
-            end
-        end
-        % approximate smallest eigenvalue
-        R(i,j) = det(M) - k * trace(M)^2;
-    end
+    plot_file = fullfile(output_dir, image_names{i});
+    saveas(gcf, plot_file);
+    disp(plot_file);
 end
-
-% apply score threshold
-threshold = quantile(R, 0.9999, 'all');
-R_threshold = (R > threshold);
-
-% perform non-max suppression
-R_suppress = zeros(height, width);
-for i=(hsize + 1):(height - hsize - 1)
-    for j=(hsize + 1):(width - hsize - 1)
-        if R(i,j) > threshold
-            window = R(i-hsize:i+hsize, j-hsize:j+hsize);
-            window_max = max(window, [], 'all');
-            if R(i,j) < window_max
-                R_suppress(i,j) = 0;
-            else
-                R_suppress(i,j) = 1;
-            end
-        end
-    end
-end
-
-% convert to pixel indices
-[y, x] = find(R_suppress);
-
-%% VISUALIZATION
-
-% diplay color and grayscale image
-figure;
-subplot(1, 2, 1); imagesc(im);
-subplot(1, 2, 2); imagesc(im_gray);
-colormap gray;
-
-% display image gradient
-figure;
-subplot(1, 2, 1); imagesc(Ih);
-subplot(1, 2, 2); imagesc(Iv);
-colormap gray;
-
-% display image gradient
-figure;
-subplot(1, 2, 1); imagesc(Ih);
-subplot(1, 2, 2); imagesc(Iv);
-colormap gray
-
-% display corner detection
-figure;
-subplot(1, 3, 1); imagesc(R);
-subplot(1, 3, 2); imagesc(R_threshold);
-subplot(1, 3, 3); imagesc(R_suppress); hold on; scatter(x, y);
-colormap gray;

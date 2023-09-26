@@ -1,21 +1,31 @@
-function [x, y, scores, Ih, Iv] = extract_keypoints(image)
+function [x, y, scores, Ih, Iv] = extract_keypoints(image, hsize, filter, threshold)
 
-% corner detection parameters
+% default arguments
+if nargin < 4
+    threshold = 5e10; % score threshold
+end
+if nargin < 3
+    filter = 1; % apply Gaussian filter
+end
+if nargin < 2
+   hsize = 2; % half window size
+end
+
+% corner detection parameter(s)
 k = 0.05;
-hsize = 2;              % half window size
-fsize = 2 * hsize + 1;  % full window size
+fsize = 2 * hsize + 1; % full window size
 
 % convert image to grayscale double
-im_gray = double(rgb2gray(image));
-[height, width] = size(im_gray);
+image_gray = double(rgb2gray(image));
+[height, width] = size(image_gray);
 
 % Sobel derivative filters
-Dh = [1 0 -1;2 0 -2;1 0 -1];
-Dv = [1 2 1;0 0 0;-1 -2 -1];
+Dh = [-1 0 1; -2 0 2; -1 0 1];
+Dv = [-1 -2 -1; 0 0 0; 1 2 1];
 
-% apply derivative filters to image
-Ih = imfilter(im_gray, Dh);
-Iv = imfilter(im_gray, Dv);
+% compute image gradient
+Ih = imfilter(image_gray, Dh, 'symmetric');
+Iv = imfilter(image_gray, Dv, 'symmetric');
 
 % compute corner detection scores
 R = zeros(height, width);
@@ -36,17 +46,24 @@ for i=(hsize + 1):(height - hsize - 1)
         R(i,j) = det(M) - k * trace(M)^2;
     end
 end
+
+% NOTE: I found better corner detection accuracy by applying a 5x5 Gaussian
+% filter to the scores before applying the threshold and non-max suppression
+if filter
+    f = [1; 4; 6; 4; 1] / 16;
+    R = imfilter(R, f * f');
+end
 scores = R;
 
 % apply score threshold
-threshold = quantile(R, 0.9999, 'all');
 R_threshold = (R > threshold);
 
 % perform non-max suppression
+hsize = 1; 
 R_suppress = zeros(height, width);
 for i=(hsize + 1):(height - hsize - 1)
     for j=(hsize + 1):(width - hsize - 1)
-        if R(i,j) > threshold
+        if R_threshold(i,j)
             window = R(i-hsize:i+hsize, j-hsize:j+hsize);
             window_max = max(window, [], 'all');
             if R(i,j) < window_max
@@ -60,5 +77,8 @@ end
 
 % convert to pixel indices
 [y, x] = find(R_suppress);
-end
 
+% return scores at keypoints intead of entire score map
+%scores = R(sub2ind([height, width], y, x));
+
+end
