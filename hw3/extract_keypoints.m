@@ -1,14 +1,17 @@
-function [x, y, scores, Ih, Iv] = extract_keypoints(image, hsize, filter, threshold)
+function [x, y, scores, Ih, Iv] = extract_keypoints(image, debug_mode, hsize, filter, threshold)
 
 % default arguments
-if nargin < 4
+if nargin < 5
     threshold = 5e10; % score threshold
 end
-if nargin < 3
+if nargin < 4
     filter = 1; % apply Gaussian filter
 end
-if nargin < 2
+if nargin < 3
    hsize = 2; % half window size
+end
+if nargin < 2
+    debug_mode = 0;
 end
 
 % corner detection parameter(s)
@@ -53,7 +56,6 @@ if filter
     f = [1; 4; 6; 4; 1] / 16;
     R = imfilter(R, f * f');
 end
-scores = R;
 
 % apply score threshold
 R_threshold = (R > threshold);
@@ -78,7 +80,10 @@ end
 % convert to pixel indices
 [y, x] = find(R_suppress);
 
-% return scores at keypoints intead of entire score map
-%scores = R(sub2ind([height, width], y, x));
+if debug_mode % return entire score map
+    scores = R;
+else % only return scores at keypoints
+    scores = R(sub2ind([height, width], y, x));
+end
 
 end
