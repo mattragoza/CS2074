@@ -1,7 +1,11 @@
-function [outputArg1,outputArg2] = computeBOWrepr(inputArg1,inputArg2)
-%COMPUTEBOWREPR Summary of this function goes here
-%   Detailed explanation goes here
-outputArg1 = inputArg1;
-outputArg2 = inputArg2;
+function [bow_repr] = computeBOWrepr(features, means)
+
+num_clusters = size(means, 1);
+
+bow_repr = zeros(num_clusters);
+
+% normalize the BOW representation
+bow_repr = bow_repr ./ sum(bow_repr);
+
 end
 

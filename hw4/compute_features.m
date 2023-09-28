@@ -25,26 +25,26 @@ bin_size = 180 / num_features;
 bin_edges = -90:bin_size:90;
 [counts, bin_edges, theta_bins] = histcounts(theta, bin_edges);
 
-size(theta_bins)
-
 % compute histograms of oriented gradients
 features = zeros(num_points, num_features);
 for i=1:num_points
     x_patch = (y(i) - kernel_hsize):(y(i) + kernel_hsize);
     y_patch = (x(i) - kernel_hsize):(x(i) + kernel_hsize);
+    M_patch = M(x_patch, y_patch);
+    theta_patch = theta_bins(x_patch, y_patch);
     for j=1:num_features
-        features(i,j) = sum(M(theta_bins == j));
+        features(i,j) = sum(M_patch(theta_patch == j));
     end
 end
 
 % normalize each feature vector
-features = features / sum(features, 2);
+features = features ./ sum(features, 2);
 
 % clip HOG features to 0.2
 features(features > 0.2) = 0.2;
 
 % normalize each feature vector again
-features = features / sum(features, 2);
+features = features ./ sum(features, 2);
 
 end
 
