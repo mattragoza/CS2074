@@ -3,8 +3,10 @@
 % USE/NOTES:
 % MAKE SURE TO ADD YOUR HW2 and HW3 FOLDERS TO THE PATH;
 % DO NOT SHARE AS FUTURE STUDENTS MIGHT BE ASKED TO IMPLEMENT THIS
+addpath('../hw2');
 
 % get list of images for the comparison
+image_dir = 'images/';
 im_list = {'cardinal1.jpg', 'cardinal2.jpg', 'leopard1.jpg', 'leopard2.jpg', 'panda1.jpg', 'panda2.jpg'}; 
 
 % load filters
@@ -15,7 +17,7 @@ F = makeLMfilters;
 for k = [2 5 10 50]
     
     % load cluster centers
-    load(strcat('means_k', num2str(k)));  
+    load(strcat('clusters/means_k', num2str(k)), 'means');
     
     % initialize storage for each of the three types of representations
     reprs_bow = [];
@@ -25,12 +27,12 @@ for k = [2 5 10 50]
     % compute representations
 
     for i = 1:length(im_list)
-        im = imread(im_list{i});  
+        im = imread(fullfile(image_dir, im_list{i}));  
         im = imresize(im, [300 300]);
 
         [x, y, scores, Ix, Iy] = extract_keypoints(im); % from HW3
         [features] = compute_features(x, y, scores, Ix, Iy); % you implement 
-        repr1 = computeBOWRepr(features, means); % you implement   
+        repr1 = computeBOWrepr(features, means); % you implement   
         [repr2, repr3] = computeTextureReprs(im, F); % provided
 
         reprs_bow = [reprs_bow; repr1];

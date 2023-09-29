@@ -2,7 +2,7 @@ function [x, y, scores, Ih, Iv] = extract_keypoints(image, debug_mode, hsize, fi
 
 % default arguments
 if nargin < 5
-    threshold = 5e10; % score threshold
+    threshold = 2e11; % score threshold
 end
 if nargin < 4
     filter = 1; % apply Gaussian filter
