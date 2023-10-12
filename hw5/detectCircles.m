@@ -20,7 +20,14 @@ for i=1:size(edges, 1)
             if (0 < a && a <= width) && (0 < b && b <= height)
                 a_idx = ceil(a / quantization);
                 b_idx = ceil(b / quantization);
+
+                % I found much better circle detection accuracy by
+                % weighting the accumulated values by the gradient
+                % magnitude and angle relative to theta, which makes
+                % sense if you think about how the edges that define
+                % the circle boundary should be oriented
                 h = sqrt(mag) .* abs(cosd(theta - phi)).^2;
+                
                 H(b_idx,a_idx) = H(b_idx,a_idx) + h;
             end
         end
