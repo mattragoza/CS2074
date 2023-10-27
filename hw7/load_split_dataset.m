@@ -1,9 +1,7 @@
 % load_split_dataset: load dataset, split into train/test
 
-input('Set the path below to where you downloaded the scene dataset...');
-pause(1)
-
-scenes_dir = '';
+% unzip scenes_lazebnik.zip first
+scenes_dir = 'scenes_lazebnik';
 
 num_classes = 8;
 per_class_train = 100;
@@ -111,4 +109,7 @@ disp('running kmeans (will take a few minutes)...');
 K = 50;
 [~, means] = kmeans(double(all_desc), K);
 
-
+% save split dataset
+save('train.mat', 'train_images', 'train_sift', 'train_labels');
+save('test.mat', 'test_images', 'test_sift', 'test_labels');
+save('means.mat', 'means');
