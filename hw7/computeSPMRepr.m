@@ -7,8 +7,10 @@ function [pyramid, level_0, level_1] = computeSPMRepr(im_size, sift, means)
     y = sift.f(2,:)';
     features = double(sift.d');
 
+    % level_0: (1 x mean_size)
     level_0 = computeBOWRepr(features, means);
 
+    % level_1: (1 x 4*mean_size)
     level_1 = [];
     for i=0:1
         for j=0:1
@@ -22,5 +24,6 @@ function [pyramid, level_0, level_1] = computeSPMRepr(im_size, sift, means)
         end
     end
 
+    % pyramid: (1 x 5*mean_size)
     pyramid = [level_0 level_1];
 end

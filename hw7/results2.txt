@@ -1,0 +1,7 @@
+The plots in results.png show the train and test accuracy from applying SVMs and KNN classifiers with varying values of the k hyperparameter for the task of scene classification. Each of the classifiers used the 2 level spatial pyramid representation of the input images. From these plots we can see a number of trends.
+
+Overall, the SVM classifier outperformed the KNN classifiers across all values of the k hyperparameter in terms of test accuracy. The SVM had train accuracy around 67% and test accuracy around 59%. This was better test accuracy than any KNN classifier that was evaluated, indicated better generalization from the SVM classifier.
+
+The best KNN test accuracy was reached by using a value of k = 5, but the test accuracy was only around 48%. The KNN test accuracy was slightly worse by using fewer neighbors or more neighbors for the classification.
+
+A notable decreasing trend can be seen in the KNN train accuracy as the k hyperparameter increases. This is because when k = 1, the train predictions are identical to the train labels. As the k value increases, the train predictions are voted on by larger and larger sets of neighbors, so the train prediction deviates more and more from the train labels.

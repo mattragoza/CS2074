@@ -1,0 +1,8 @@
+Method	Accuracy
+pyramid	0.5850
+level_0	0.4425
+level_1	0.5750
+
+The table above shows the test accuracy results from applying SVMs to different image representations for the purpose of scene classification. The "pyramid" representation, which includes both level_0 and level_1, performed the best with test accuracy of 58.5%. The level_1 representation performed second best with test accuracy of 57.5%, while the level 0 representation performed worst with accuracy of 44.25%.
+
+These results indicate that the level_1 representation was more informative for scene classification than level_0. This makes sense since the level_0 representation discards all information about shape and relative configuration of detected features. These are likely important cues for distinguishing between different types of scenes. However, there was some complementary information present in both levels of the pyramid, since the best performance was achieved by using both the levels together for scene classification.
