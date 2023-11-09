@@ -1,0 +1,6 @@
+  	L_hinge 	L_cross
+W1	3.814245	1.801966
+W2	2.662313	1.405473
+W3	3.266802	1.522561
+
+The table above shows the hinge loss and cross entropy loss values for linear classifiers with three different weights. Using the hinge loss, the best weight matrix is W2 (L_hinge = 2.66), followed by W3 (L_hinge = 3.27) and W1 (L_hinge = 3.81). For the cross entropy loss, again the best weight matrix is W2 (L_cross = 1.41) followed by W3 (L_cross = 1.52) and W1 (L_cross = 1.80). The loss functions are in agreement that the best classification performance is achieved by using weights W2.
