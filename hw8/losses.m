@@ -4,7 +4,7 @@ load('weights_samples.mat');
 
 N =  4; % num data samples
 D = 25; % num input units
-K =  1; % num output units
+K =  4; % num output units
 
 x = [x1 x2 x3 x4];
 y = 1:4;
