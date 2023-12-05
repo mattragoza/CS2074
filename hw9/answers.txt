@@ -1,0 +1,45 @@
+Part I. Training a neural network from scratch
+
+The CNN model trained completely from scratch achieved at final test accuracy of 0.1675. This is extremely low compared to the accuracy that was achieved in homework 7 by using an SVM trained on different non-deep learning based image representations. There are a variety of possible explanations for this poor performance. One possible reason is that the model was simply not trained on enough high-quality data to learn useful and generalizable image representations. The model was trained on less than 1000 images, which is typically much smaller than the amount of data normally used to train a deep learning model successfully. From the training plot we can see that the model's training loss converged quite low, but the test accuracy was still poor, which is the classic sign of overfitting.
+
+Test accuracy: 0.1675
+
+Part II. Transfer learning from pretrained network
+
+The CNN trained using transfer learning with a pretrained AlexNet model performed much better than the one trained from scratch. It is not a totatlly fair comparison because the model architectures are different, but both of the transfer learning methods reached much higher test accuracy than the model from part I. When I transferred layers up to FC6, the mean test accuracy across 5 training runs was 0.8035. When I transferred layers up to FC8, the mean test accuracy was 0.8630. This makese sense assuming that deeper layers in the network learn more abstract and transferrable features.
+
+			Test accuracy
+Method		mean	std
+FC6			0.8035	0.0184
+FC8			0.8630	0.0225
+
+Part III. Transfer learning with data augmentation
+
+I compared three different settings for training CNNs with data augmentation, and two difference amounts of training data. I used either 100 images per class or 10 images per class, and for each of these I used either no data augmentation, augmentation with random horizontal reflections (flip), or augmentation with horizontal reflections, random scaling, and random translations (multi). For either amount of training data, the best test accuracy was achieved using only the random horizontal flip data augmentation. This setting has higher test accuracy than either no data augmentation, or multiple forms of data augmentation, with either amount of training data.
+
+			Test accuracy
+N	Augment	mean	std
+100	none	0.7880	0.0204	
+100 flip	0.8125	0.0225
+100	multi	0.7725	0.0257
+10	none	0.3629	0.0375	
+10	flip	0.4323	0.0488
+10	multi	0.3327	0.0175	
+
+Part IV. Transfer learning with frozen layers
+
+I trained CNNs on 10 training images per class using transfer learning from AlexNet, either freezing or not freezing the AlexNet layers. When layers were frozen, the mean test accuracy was 0.3412. When the layers were not frozen, the mean test accuracy was 0.3679, indicating that it was better to let the AlexNet layers fine-tune along with the added fully-connected layer instead of freezing them.
+
+		Test accuracy
+Frozen	mean	std
+no 		0.3412	0.0087
+yes		0.3679	0.0139
+
+Part V. Object detection
+
+The detection scores and intersection over union (IoU) values from applying the pretrained Faster R-CNN object detection model two three images are shown below. The IoU scores have good qualitative agreement with the visual quality of the bounding boxes compared to my annotations. It is also interesting to note the linear correlation between the detection score and the IoU.
+
+Image		Score	IoU
+cars1.jpg	0.75	0.38
+cars2.jpg	0.96	0.57
+cars3.jpg	0.99	0.75
