@@ -18,38 +18,42 @@ images = imageDatastore(data_root, ...
     images, n_train_images_per_class, 'randomize' ...
 );
 
-% TRANSFER LEARNING
+all_accuracy = [];
+for run=1:5
+    fprintf('Training run %d / 5\n', run);
 
-% load the pretrained model
-net = alexnet;
+    % load the pretrained model
+    net = alexnet;
+    
+    % replace final layers
+    pretrained_layers = net.Layers(1:end-5); % -9 or -5
+    
+    layers = [
+        pretrained_layers
+        fullyConnectedLayer(n_image_classes)
+        softmaxLayer
+        classificationLayer
+    ];
+    
+    % specify training hyperparameters
+    options = trainingOptions('sgdm', ...
+        InitialLearnRate = learning_rate, ...
+        MaxEpochs = n_train_epochs, ...
+        ... %Plots = 'training-progress', ...
+        Verbose = true ...
+    );
+    
+    % train the network
+    net = trainNetwork(train_images, layers, options);
+    
+    % evaluate test set
+    y_pred = classify(net, test_images);
+    y_true = test_images.Labels;
+    
+    accuracy = sum(y_pred == y_true) / numel(y_true);
+    fprintf('Final test accuracy: %.4f\n', accuracy);
 
-% replace final layers
-pretrained_layers = net.Layers(1:end-5); % -9 or -5
+    all_accuracy = [all_accuracy accuracy];
+end
 
-layers = [
-    pretrained_layers
-    fullyConnectedLayer(n_image_classes)
-    softmaxLayer
-    classificationLayer
-];
-
-% specify training hyperparameters
-options = trainingOptions('sgdm', ...
-    InitialLearnRate = learning_rate, ...
-    MaxEpochs = n_train_epochs, ...
-    Plots = 'training-progress', ...
-    Verbose = true ...
-);
-
-% train the network
-net = trainNetwork(train_images, layers, options);
-
-% evaluate test set
-y_pred = classify(net, test_images);
-y_true = test_images.Labels;
-
-accuracy = sum(y_pred == y_true) / numel(y_true);
-fprintf('Final test accuracy: %.4f', accuracy);
-
-% Training finished: Max epochs completed.
-% Final test accuracy: 0.8125
+fprintf('mean = %.4f\n std = %.4f\n', mean(all_accuracy), std(all_accuracy));
